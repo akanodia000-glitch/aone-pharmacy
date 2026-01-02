@@ -1,0 +1,3 @@
+pharmacy.db
+*.db
+__pycache__/
