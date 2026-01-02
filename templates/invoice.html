@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice {{ inv.invoice_no }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 15mm;
+            color: #000;
+        }
+
+        /* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #28a745;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Shop header (logo + text) */
+.shop-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Logo size balanced */
+.logo {
+    height: 70px;
+    width: auto;
+}
+
+/* Shop text */
+.shop-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.shop-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: #28a745;
+    line-height: 1.2;
+}
+
+.shop-details {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Invoice meta */
+.invoice-box {
+    text-align: right;
+    font-size: 13px;
+}
+
+
+        /* CUSTOMER INFO */
+        .customer-info {
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f2f2f2;
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td.left {
+            text-align: left;
+            max-width: 320px;
+            word-wrap: break-word;
+        }
+
+        /* TOTALS */
+        .summary {
+            width: 45%;
+            margin-left: auto;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .summary td {
+            padding: 8px;
+            font-weight: bold;
+        }
+
+        .grand td {
+            background: #28a745;
+            color: #fff;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+        }
+
+        @media print {
+            body {
+                margin: 10mm;
+        }
+
+        .no-print {
+            display: none !important;
+        }
+    }
+
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="shop-header">
+        <img src="/static/logo.png" class="logo">
+
+        <div class="shop-text">
+            <div class="shop-name">{{ shop.name }}</div>
+            <div class="shop-details">
+                {{ shop.address }}<br>
+                Phone: {{ shop.phone }}<br>
+                {% if shop.license_no %}
+                DL No: {{ shop.license_no }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="invoice-box">
+        <strong>Invoice No:</strong> {{ inv.invoice_no }}<br>
+        <strong>Date:</strong> {{ inv.date }}
+    </div>
+</div>
+
+<!-- CUSTOMER INFO -->
+<div class="customer-info">
+    <strong>Customer Name:</strong>
+    {{ inv.customer_name if inv.customer_name else "—" }}
+</div>
+
+<!-- ITEMS TABLE -->
+<table>
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Batch</th>
+            <th>Expiry</th>
+            <th>Qty</th>
+            <th>MRP (₹)</th>
+            <th>Total (₹)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in items %}
+        <tr>
+            <td class="left">{{ i.drug_name }}</td>
+            <td>{{ i.batch }}</td>
+            <td>{{ i.expiry }}</td>
+            <td>{{ i.qty }}</td>
+            <td>{{ "%.2f"|format(i.mrp) }}</td>
+            <td>{{ "%.2f"|format(i.total) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ITEM COUNT -->
+<div style="text-align:right; margin-top:10px; font-size:14px;">
+    <strong>Total Items:</strong> {{ items|length }}
+</div>
+
+<!-- TOTALS -->
+<table class="summary">
+    <tr>
+        <td class="text-end">Sub Total</td>
+        <td>₹{{ "%.2f"|format(inv.subtotal) }}</td>
+    </tr>
+    <tr>
+        <td class="text-end">Discount</td>
+        <td>₹{{ "%.2f"|format(inv.discount) }}</td>
+    </tr>
+    <tr class="grand">
+        <td class="text-end">Grand Total</td>
+        <td>₹{{ "%.2f"|format(inv.total) }}</td>
+    </tr>
+</table>
+
+<!-- FOOTER -->
+<div class="footer">
+    This is a computer-generated invoice. No signature required.<br>
+    <strong>Thank you for your purchase. Stay Healthy!</strong>
+</div>
+
+<!-- PRINT BUTTON -->
+<div class="text-center mt-3 no-print">
+    <button onclick="window.print()"
+        style="
+            padding:12px 28px;
+            background:#0d6efd;
+            color:white;
+            border:none;
+            font-size:16px;
+            font-weight:bold;
+            border-radius:6px;
+            cursor:pointer;
+        ">
+        🖨 Print Invoice
+    </button>
+</div>
+
+<!-- BACK BUTTON -->
+<div class="text-center mt-3 no-print">
+    <a href="{{ url_for('index') }}"
+       style="
+           display:inline-block;
+           padding:12px 28px;
+           background:#28a745;
+           color:white;
+           text-decoration:none;
+           font-size:16px;
+           font-weight:bold;
+           border-radius:6px;
+       ">
+        ⬅ Back to Billing
+    </a>
+</div>
+
+</body>
+</html>

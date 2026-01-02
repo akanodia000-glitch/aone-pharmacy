@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice {{ inv.invoice_no }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; margin: 10px; }
+        .header { text-align: center; margin-bottom: 10px; }
+        .shop-name { font-size: 16px; font-weight: bold; }
+        .shop-info { font-size: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        th, td { border: 1px solid #000; padding: 4px; text-align: center; }
+        .text-end { text-align: right; }
+        .footer { text-align: center; font-size: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="shop-name">{{ shop.name }}</h1>
+        <div class="shop-info">
+            {{ shop.address }}<br>
+            Phone: {{ shop.phone }}<br>
+            Invoice No: {{ inv.invoice_no }} • Date: {{ inv.date }}
+        </div>
+    </div>
+
+    <table>
+        <tr>
+            <th>Item</th>
+            <th>Batch</th>
+            <th>Expiry</th>
+            <th>Qty</th>
+            <th>MRP</th>
+            <th>Total</th>
+        </tr>
+        {% for i in items %}
+        <tr>
+            <td>{{ i.drug_name }}</td>
+            <td>{{ i.batch }}</td>
+            <td>{{ i.expiry }}</td>
+            <td>{{ i.qty }}</td>
+            <td>₹{{ "%.2f"|format(i.mrp) }}</td>
+            <td>₹{{ "%.2f"|format(i.total) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <table style="width: 50%; margin-left: auto; margin-top: 10px;">
+        <tr>
+            <td class="text-end">Sub Total</td>
+            <td>₹{{ "%.2f"|format(inv.subtotal) }}</td>
+        </tr>
+        <tr>
+            <td class="text-end">Discount</td>
+            <td>₹{{ "%.2f"|format(inv.discount) }}</td>
+        </tr>
+        <tr>
+            <td class="text-end"><strong>Grand Total</strong></td>
+            <td><strong>₹{{ "%.2f"|format(inv.total) }}</strong></td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        Thank you for your purchase!<br>
+        Visit again - Stay Healthy!
+    </div>
+</body>
+</html>
